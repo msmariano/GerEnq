@@ -11,6 +11,7 @@ public class TipoOcorrDetalhamento {
 	private String itemParagArtigo;
 	private String descEnq;
 	private String descrOcorrVis;
+	private String ativo;
 	
 	public TipoOcorrDetalhamento(String string) {
 		descrOcorrencia = string;
@@ -95,6 +96,14 @@ public class TipoOcorrDetalhamento {
 
 	public void setDescrOcorrVis(String descrOcorrVis) {
 		this.descrOcorrVis = descrOcorrVis;
+	}
+
+	public String getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(String ativo) {
+		this.ativo = ativo;
 	}
 
 

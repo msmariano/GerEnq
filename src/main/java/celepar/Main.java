@@ -14,9 +14,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 public class Main {
@@ -32,12 +34,15 @@ public class Main {
 	JFormattedTextField itemParagrafoArtigo = new JFormattedTextField();
 	JComboBox<TipoOcorrDetalhamento> tipoOcorrDetalhamento = new JComboBox<TipoOcorrDetalhamento>();
 	JComboBox<TipoOcorr> grupoOcor = new JComboBox<TipoOcorr>();
+	JComboBox<CodInfoCadEnum> codInfoCadOpt = new JComboBox<CodInfoCadEnum>();
+	JCheckBox ativo = new JCheckBox();
+	JLabel lAtivo = new JLabel("Ativo");
 
 	JTextArea areaDescrEnq = new JTextArea();
 
 	public void janelaCfg() {
 		JFrame f = new JFrame();// creating instance of JFrame
-		f.setSize(400, 690);// 400 width and 500 height
+		f.setSize(800, 690);// 400 width and 500 height
 		f.setLayout(new BorderLayout());// using no layout managers
 		
 		Dimension ds = Toolkit.getDefaultToolkit().getScreenSize(); 
@@ -55,9 +60,38 @@ public class Main {
 		layout.setVerticalGroup(
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
 
-		areaDescrEnq.setBounds(10, 410, 360, 200);
+		grupoOcor.setEditable(true);
+		
+		tipoOcorrDetalhamento.setToolTipText("Detalhe do enquadramento");
+		
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(1));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(2));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(3));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(4));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(5));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(6));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(7));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(8));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(9));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(10));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(11));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(12));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(13));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(14));
+		
+		codInfoCadOpt.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				CodInfoCadEnum cice = (CodInfoCadEnum) codInfoCadOpt.getSelectedItem();
+				codCadInf.setText(String.valueOf(cice.getId()));
+				
+			}
+		});
+		
+		codInfoCadOpt.setBounds(40, 330, 280, 40);
+		f.add(codInfoCadOpt);
 
-		f.add(areaDescrEnq);
+		
 
 		tipoOcorrDetalhamento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -75,15 +109,25 @@ public class Main {
 					if (itemSelected.getDescEnq() != null && itemSelected.getDescEnq().length() > 0)
 						areaDescrEnq.setCaretPosition(areaDescrEnq.getDocument().getLength() - 1);
 
-					if (itemSelected.getCodCadInf() != null)
+					if (itemSelected.getCodCadInf() != null) {
 						codCadInf.setText(String.valueOf(itemSelected.getCodCadInf()));
-					else
+						codInfoCadOpt.setSelectedItem(CodInfoCadEnum.getEnumerator(itemSelected.getCodCadInf()));
+					}
+					else {
 						codCadInf.setText("");
+						codInfoCadOpt.setSelectedItem(CodInfoCadEnum.getEnumerator(CodInfoCadEnum.NENHUM.getId()));
+					}
 
 					if (itemSelected.getArtigo() != null)
 						artigo.setText(String.valueOf(itemSelected.getArtigo()));
 					else
 						artigo.setText("");
+					
+					if(itemSelected.getAtivo().toUpperCase().equals("S")) 
+						ativo.setSelected(true);								
+					else
+						ativo.setSelected(false);
+						
 
 				}
 
@@ -104,12 +148,12 @@ public class Main {
 					String sql = "SELECT tpOcor.codGrupoOcor\r\n" + "	,tpOcor.codOcorrencia\r\n"
 							+ "	,tpOcor.ordemExibicao\r\n" + "	,tpOcor.descrOcorrencia\r\n"
 							+ "	,tpOcor.codCadInf\r\n" + "	,enq.artigo\r\n" + "	,enq.itemParagArtigo\r\n"
-							+ "	,enq.DescrEnquad\r\n" + "FROM TB_TipoOcorrencia tpOcor\r\n"
+							+ "	,enq.DescrEnquad\r\n,tpOcor.ativo \r\n" + " FROM TB_TipoOcorrencia tpOcor\r\n"
 							+ "left JOIN TB_Enquadramento enq ON enq.CodGrupoOcor = tpOcor.CodGrupoOcor\r\n"
 							+ "	AND enq.CodOcorrencia = tpOcor.CodOcorrencia\r\n"
-							+ "WHERE tpOcor.Ativo = 'S' AND tpOcor.CodOcorrencia <> 0 \r\n"
+							+ "WHERE  tpOcor.CodOcorrencia <> 0 \r\n"
 							+ "	AND tpOcor.CodGrupoOcor = ? ORDER BY  tpOcor.ordemExibicao\r\n";
-
+							//tpOcor.Ativo = 'S' AND
 					PreparedStatement stmt = con.prepareStatement(sql);
 					stmt.setInt(1, itemSelected.getCodGrupoOcor());
 					stmt.execute();
@@ -132,10 +176,36 @@ public class Main {
 						if (rs.getString(7) != null)
 							item.setItemParagArtigo(rs.getString(7));
 						item.setOrdemExibicao(rs.getInt(3));
-						if (rs.getString(5) != null)
-							item.setCodCadInf(rs.getInt(5));
-
-						tipoOcorrDetalhamento.addItem(item);
+						if (rs.getString(5) != null) {
+							if(rs.getInt(5)<=9)
+								item.setCodCadInf(rs.getInt(5));
+							else
+								System.err.println();
+							//codCadInf.setText(rs.getString(5));
+							//codInfoCadOpt.setSelectedItem(CodInfoCadEnum.getEnumerator(rs.getInt(5)));
+						}
+						else {
+							//codInfoCadOpt.setSelectedItem(CodInfoCadEnum.getEnumerator(CodInfoCadEnum.NENHUM.getId()));
+							//codCadInf.setText("");
+						}
+						if(rs.getString(9)!=null) {
+							item.setAtivo(rs.getString(9));
+							if(item.getAtivo().toUpperCase().equals("S")) {
+								ativo.setSelected(true);								
+							}
+							else
+								ativo.setSelected(false);
+						}
+						else
+							ativo.setSelected(false);
+						
+						try {
+							if(item !=null)
+								tipoOcorrDetalhamento.addItem(item);
+						}
+						catch (Exception e1) {
+							System.err.println("1:"+e1.getMessage());
+						}
 					}
 					con.close();
 
@@ -168,18 +238,27 @@ public class Main {
 		}
 		grupoOcor.setBounds(10, 10, 360, 40);
 		f.add(grupoOcor);
-		tipoOcorrDetalhamento.setBounds(10, 50, 360, 40);
-		f.add(tipoOcorrDetalhamento);
+		tipoOcorrDetalhamento.setBounds(10, 50, 360, 40); ativo.setBounds(370, 50, 20, 20);f.add(ativo);lAtivo.setBounds(390, 50, 40, 20);f.add(lAtivo);
+		f.add(tipoOcorrDetalhamento); 
+		
+		
+		
 		areaDescrOcorr.setBounds(10, 90, 360, 200);
 		f.add(areaDescrOcorr);
 		ordemExibicao.setBounds(10, 290, 30, 40);
 		f.add(ordemExibicao);
 		codCadInf.setBounds(10, 330, 30, 40);
 		f.add(codCadInf);
+		
+		
+		
 		artigo.setBounds(10, 370, 30, 40);
 		f.add(artigo);
 		itemParagrafoArtigo.setBounds(40, 370, 80, 40);
 		f.add(itemParagrafoArtigo);
+		
+		areaDescrEnq.setBounds(10, 410, 360, 200);
+		f.add(areaDescrEnq);
 
 		JButton novo = new JButton("+");// creating instance of JButton
 		novo.setBounds(100, 610, 100, 40);// x axis, y axis, width, height
@@ -211,19 +290,29 @@ public class Main {
 					if (estado.equals(ALTERAR)) {
 
 						try {
-
-							String codCadInfo = codCadInf.getText().equals("") ? "NULL" : codCadInf.getText();
+								
+							CodInfoCadEnum cice = (CodInfoCadEnum) codInfoCadOpt.getSelectedItem();
+							//String codCadInfo = codCadInf.getText().equals("8") ? "NULL" : codCadInf.getText();
+							String codCadInfo = cice.equals(CodInfoCadEnum.NENHUM) ? "null" : String.valueOf(cice.getId());
 							String ipa = itemParagrafoArtigo.getText().equals("") ? "NULL"
 									: "'" + itemParagrafoArtigo.getText() + "'";
 							Connection con = DriverManager.getConnection(connectionUrl);
 							TipoOcorrDetalhamento itemSelected = (TipoOcorrDetalhamento) tipoOcorrDetalhamento
 									.getSelectedItem();
+							
+							
+							String sAtivo = "S";
+							
+							if(!ativo.isSelected()) {
+								sAtivo = "N";
+							}
+							
 							String sql =
 
 									"EXEC dbo.stp_alterar_tipoOcorrenciaComConsEnq " + itemSelected.getCodGrupoOcor()
 											+ "	," + itemSelected.getCodOcorrencia() + ",'" + areaDescrOcorr.getText()
 											+ "'," + codCadInfo + "," + ordemExibicao.getText() + "," + artigo.getText()
-											+ "," + ipa;
+											+ "," + ipa+",'"+sAtivo+"'";
 
 							Statement stmt = con.createStatement();
 							stmt.execute(sql);
@@ -243,7 +332,9 @@ public class Main {
 
 						try {
 
-							String codCadInfo = codCadInf.getText().equals("") ? "NULL" : codCadInf.getText();
+							CodInfoCadEnum cice = (CodInfoCadEnum) codInfoCadOpt.getSelectedItem();
+							//String codCadInfo = codCadInf.getText().equals("") ? "NULL" : codCadInf.getText();
+							String codCadInfo = cice.equals(CodInfoCadEnum.NENHUM) ? "null" : String.valueOf(cice.getId());
 							String ipa = itemParagrafoArtigo.getText().equals("") ? "NULL"
 									: "'" + itemParagrafoArtigo.getText() + "'";
 							Connection con = DriverManager.getConnection(connectionUrl);
@@ -290,7 +381,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
-		  if(args.length == 0) {
+		  	if(args.length == 0) {
 		       Runtime.getRuntime().exec("java -jar " + (new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath())).getAbsolutePath() + " cmd");
 		    } else {
 		    	new Main().janelaCfg();
