@@ -5,13 +5,18 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -23,7 +28,11 @@ import javax.swing.JTextArea;
 
 public class Main {
 
+	//static String connectionUrl = "jdbc:jtds:sqlserver://sqldesenv01.eparana.parana:1433/sia;databaseName=sia;user=sa_sia;password=stranger";
 	static String connectionUrl = "jdbc:jtds:sqlserver://10.15.60.80:1433/sia;databaseName=sia;user=sflprod;password=prodsfl";
+	
+	
+	
 	static final Integer ALTERAR = 0;
 	static final Integer INCLUIR = 1;
 	static Integer estado = ALTERAR;
@@ -78,6 +87,7 @@ public class Main {
 		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(12));
 		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(13));
 		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(14));
+		codInfoCadOpt.addItem(CodInfoCadEnum.getEnumerator(20));
 		
 		codInfoCadOpt.addActionListener(new ActionListener() {
 			
@@ -179,6 +189,8 @@ public class Main {
 						if (rs.getString(5) != null) {
 							if(rs.getInt(5)<=9)
 								item.setCodCadInf(rs.getInt(5));
+							else if(rs.getInt(5)==20)
+								item.setCodCadInf(rs.getInt(5));
 							else
 								System.err.println();
 							//codCadInf.setText(rs.getString(5));
@@ -266,12 +278,15 @@ public class Main {
 
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("+")) {
+					
+					Integer total = tipoOcorrDetalhamento.getItemCount()+1;
+					
 					tipoOcorrDetalhamento.removeAllItems();
 					artigo.setText("");
 					areaDescrOcorr.setText("");
-					ordemExibicao.setText("");
+					ordemExibicao.setText(String.valueOf(total));
 					codCadInf.setText("");
-					artigo.setText("");
+					artigo.setText("66");
 					itemParagrafoArtigo.setText("");
 					areaDescrEnq.setText("");
 					estado = INCLUIR;
@@ -381,14 +396,65 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
-		  	if(args.length == 0) {
+		  	/*if(args.length == 0) {
 		       Runtime.getRuntime().exec("java -jar " + (new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath())).getAbsolutePath() + " cmd");
 		    } else {
 		    	new Main().janelaCfg();
-		    }
+		    }*/
 		
-		//new Main().janelaCfg();
+		new Main().janelaCfg();
+		//Main.importarRppn();
 		
+
+	}
+	
+	public static void importarRppn() {
+		try {
+			Connection con = DriverManager.getConnection(connectionUrl);
+			Statement stmt = con.createStatement();
+
+			BufferedReader myBuffer = new BufferedReader(
+					new InputStreamReader(new FileInputStream("d:\\temp\\APA - Area de Proteçao Ambiental.txt"), "UTF-8"));
+
+			String linha = myBuffer.readLine();
+
+			while (linha != null) {
+
+				linha = linha.replace("?", "");
+				String[] cel = linha.trim().split(";");
+				String nomeMun = "";
+				String descr = cel[0].replace("'", " ");
+				descr =descr.trim();
+				String codCatArea = "21";
+				if (cel.length > 1)
+					nomeMun = cel[1];
+
+				String sql = "Declare @codMun as int, " + "	   @descr as char(200), @codAreaProt as int	 "
+						+ "	select top 1 @codMun = CodMun from TB_Municipio where NomeMun like '" + nomeMun + "' "
+						+ "	set @descr = '" + descr + "' "
+						+ "   select @codAreaProt = max(CodAreaProtCor)+1 from TB_AREAPROTEGIDA  " + " "
+						+ "INSERT INTO TB_AREAPROTEGIDA ( " + "	CodAreaProtCor " + "	,CodCatArea " + "	,DescrAreaProt "
+						+ "	,DataAtualizacao " + "	,Gestao " + "	,Area " + "	,STATUS " + "	,CodMun "
+						+ "	,QtdeFunc " + "	,Situacao " + "	,conselho " + "	,Arrecadacao " + "	,Programas "
+						+ "	,Pesquisas " + "	) " + "VALUES ( " + "	@codAreaProt " + "	,'"+codCatArea+"' " + "	,@descr "
+						+ "	,getdate() " + "	,NULL " + "	,NULL " + "	,NULL " + "	,@codMun " + "	,NULL " + "	,'' "
+						+ "	,'' " + "	,'' " + "	,'' " + "	,'' " + "	) ;";
+
+				sql = sql.replace("?", "");
+				try {
+					stmt.execute(sql);
+					// System.out.println(sql);
+				} catch (Exception e) {
+					System.out.println(linha);
+				}
+				// System.out.println(linha);
+				linha = myBuffer.readLine();
+			}
+			myBuffer.close();
+			con.close();
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 
 	}
 

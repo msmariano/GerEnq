@@ -14,7 +14,8 @@ public enum CodInfoCadEnum {
 	ITEM_11(11,"ITEM_11"),
 	ITEM_12(12,"ITEM_12"),
 	ITEM_13(13,"ITEM_13"),
-	ITEM_14(14,"ITEM_14");
+	ITEM_14(14,"ITEM_14"),
+	LOG_REV(20,"Logística Reversa");
 	
 	
 	
