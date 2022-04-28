@@ -38,9 +38,14 @@ public class Main {
 	static Integer estado = ALTERAR;
 	JTextArea areaDescrOcorr = new JTextArea();
 	JFormattedTextField ordemExibicao = new JFormattedTextField();
+	JTextArea inserirAtEsp = new JTextArea();
 	JFormattedTextField codCadInf = new JFormattedTextField();
 	JFormattedTextField artigo = new JFormattedTextField();
 	JFormattedTextField itemParagrafoArtigo = new JFormattedTextField();
+
+	JFormattedTextField grupoAt = new JFormattedTextField();
+	JFormattedTextField atividade = new JFormattedTextField();
+
 	JComboBox<TipoOcorrDetalhamento> tipoOcorrDetalhamento = new JComboBox<TipoOcorrDetalhamento>();
 	JComboBox<TipoOcorr> grupoOcor = new JComboBox<TipoOcorr>();
 	JComboBox<CodInfoCadEnum> codInfoCadOpt = new JComboBox<CodInfoCadEnum>();
@@ -250,7 +255,23 @@ public class Main {
 		}
 		grupoOcor.setBounds(10, 10, 360, 40);
 		f.add(grupoOcor);
-		tipoOcorrDetalhamento.setBounds(10, 50, 360, 40); ativo.setBounds(370, 50, 20, 20);f.add(ativo);lAtivo.setBounds(390, 50, 40, 20);f.add(lAtivo);
+		tipoOcorrDetalhamento.setBounds(10, 50, 360, 40); 
+		ativo.setBounds(370, 50, 20, 20);
+		f.add(ativo);
+		inserirAtEsp.setBounds(430,50,380,500);
+		f.add(inserirAtEsp);
+		grupoAt.setBounds(430,560,20,20);
+		f.add(grupoAt);
+		atividade.setBounds(460,560,20,40);
+		f.add(atividade);
+		JButton inserirAtEsp = new JButton("InserirAt");
+		f.setBounds(510,560,100,20);
+		f.add(inserirAtEsp);
+		
+
+
+		lAtivo.setBounds(390, 50, 40, 20);
+		f.add(lAtivo);
 		f.add(tipoOcorrDetalhamento); 
 		
 		
