@@ -28,8 +28,8 @@ import javax.swing.JTextArea;
 
 public class Main {
 
-	//static String connectionUrl = "jdbc:jtds:sqlserver://sqldesenv01.eparana.parana:1433/sia;databaseName=sia;user=sa_sia;password=stranger";
-	static String connectionUrl = "jdbc:jtds:sqlserver://10.15.60.80:1433/sia;databaseName=sia;user=sflprod;password=prodsfl";
+	static String connectionUrl = "jdbc:jtds:sqlserver://sqldesenv01.eparana.parana:1433/sia;databaseName=sia;user=sa_sia;password=stranger";
+	//static String connectionUrl = "jdbc:jtds:sqlserver://10.15.60.80:1433/sia;databaseName=sia;user=sflprod;password=prodsfl";
 	
 	
 	
@@ -262,11 +262,11 @@ public class Main {
 		f.add(inserirAtEsp);
 		grupoAt.setBounds(430,560,20,20);
 		f.add(grupoAt);
-		atividade.setBounds(460,560,20,40);
+		atividade.setBounds(460,560,40,20);
 		f.add(atividade);
-		JButton inserirAtEsp = new JButton("InserirAt");
-		f.setBounds(510,560,100,20);
-		f.add(inserirAtEsp);
+		//JButton inserirAtEsp = new JButton("InserirAt");
+		//f.setBounds(510,560,100,20);
+		//f.add(inserirAtEsp);
 		
 
 
@@ -416,7 +416,7 @@ public class Main {
 
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		  	/*if(args.length == 0) {
 		       Runtime.getRuntime().exec("java -jar " + (new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath())).getAbsolutePath() + " cmd");
 		    } else {
